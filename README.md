@@ -151,7 +151,6 @@ Contributions, suggestions, and improvements are welcome.
 
 **Rohit Patil**
 
-B.Tech CSE (Internet of Things)
 
 VIT Vellore
 
