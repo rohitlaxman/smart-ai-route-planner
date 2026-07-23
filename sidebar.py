@@ -105,21 +105,116 @@ class Sidebar(ctk.CTkFrame):
             padx=20
         )
 
+        # ==================================================
+        # SEARCH STATISTICS
+        # ==================================================
+
+        divider = ctk.CTkLabel(
+            self,
+            text="────────────────────────"
+        )
+        divider.pack(pady=(25, 10))
+
+        heading = ctk.CTkLabel(
+            self,
+            text="Search Statistics",
+            font=("Arial", 16, "bold")
+        )
+        heading.pack()
+
         # ---------------- Status ----------------
 
-        self.status = ctk.CTkLabel(
+        self.status_value = ctk.CTkLabel(
+            self,
+            text="Ready",
+            font=("Arial", 14)
+        )
+        self.status_value.pack(pady=(10, 5))
+
+        # ---------------- Algorithm ----------------
+
+        self.algorithm_value = ctk.CTkLabel(
+            self,
+            text="Algorithm : -",
+            anchor="w"
+        )
+        self.algorithm_value.pack(fill="x", padx=20)
+
+        # ---------------- Nodes ----------------
+
+        self.nodes_value = ctk.CTkLabel(
+            self,
+            text="Visited Nodes : 0",
+            anchor="w"
+        )
+        self.nodes_value.pack(fill="x", padx=20)
+
+        # ---------------- Path ----------------
+
+        self.path_value = ctk.CTkLabel(
+            self,
+            text="Path Length : 0",
+            anchor="w"
+        )
+        self.path_value.pack(fill="x", padx=20)
+
+        # ---------------- Time ----------------
+
+        self.time_value = ctk.CTkLabel(
+            self,
+            text="Execution Time : 0.000 s",
+            anchor="w"
+        )
+        self.time_value.pack(fill="x", padx=20)
+
+        # ==================================================
+
+        self.mode_status = ctk.CTkLabel(
             self,
             text="Mode : Obstacle",
             font=("Arial", 14)
         )
 
-        self.status.pack(pady=30)
+        self.mode_status.pack(
+            side="bottom",
+            pady=20
+        )
+
+    # ----------------------------------------------------
+
+    def update_statistics(self, stats):
+
+        """
+        Update all statistics shown in the sidebar.
+        """
+
+        self.status_value.configure(
+            text=stats.status
+        )
+
+        algorithm = stats.algorithm if stats.algorithm else "-"
+
+        self.algorithm_value.configure(
+            text=f"Algorithm : {algorithm}"
+        )
+
+        self.nodes_value.configure(
+            text=f"Visited Nodes : {stats.visited_nodes}"
+        )
+
+        self.path_value.configure(
+            text=f"Path Length : {stats.path_length}"
+        )
+
+        self.time_value.configure(
+            text=f"Execution Time : {stats.execution_time:.4f} s"
+        )
 
     # ----------------------------------------------------
 
     def mode_changed(self, mode):
 
-        self.status.configure(
+        self.mode_status.configure(
             text=f"Mode : {mode}"
         )
 

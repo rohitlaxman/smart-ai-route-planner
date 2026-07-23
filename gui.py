@@ -7,13 +7,16 @@ Main application window.
 ===========================================================
 """
 
+import time
 import customtkinter as ctk
+from tkinter import messagebox
 
 from constants import *
 from grid import Grid
 from sidebar import Sidebar
 from algorithms import SearchAlgorithms
 from visualizer import Visualizer
+from stats import SearchStats
 
 
 class SmartRoutePlannerGUI(ctk.CTk):
@@ -27,6 +30,10 @@ class SmartRoutePlannerGUI(ctk.CTk):
 
         ctk.set_appearance_mode("Dark")
         ctk.set_default_color_theme("blue")
+
+        # ---------------- Statistics ----------------
+
+        self.stats = SearchStats()
 
         # ---------------- Layout ----------------
 
@@ -44,6 +51,8 @@ class SmartRoutePlannerGUI(ctk.CTk):
             pady=10,
             sticky="ns"
         )
+
+        self.sidebar.update_statistics(self.stats)
 
         # ---------------- Grid ----------------
 
@@ -79,23 +88,45 @@ class SmartRoutePlannerGUI(ctk.CTk):
 
         self.grid_object.clear_grid()
 
+        self.stats.reset()
+
+        self.sidebar.update_statistics(self.stats)
+
     # ----------------------------------------------------
 
     def run_algorithm(self):
 
         if self.grid_object.start is None:
 
-            print("Please select a START node.")
+            messagebox.showerror(
+                "Missing Start Node",
+                "Please select a START node."
+            )
 
             return
 
         if self.grid_object.goal is None:
 
-            print("Please select a GOAL node.")
+            messagebox.showerror(
+                "Missing Goal Node",
+                "Please select a GOAL node."
+            )
 
             return
 
         algorithm = self.sidebar.get_selected_algorithm()
+
+        # ---------------- Search Started ----------------
+
+        self.stats.start_search(algorithm)
+
+        self.sidebar.update_statistics(self.stats)
+
+        self.update()
+
+        start_time = time.perf_counter()
+
+        # ---------------- BFS ----------------
 
         if algorithm == "Breadth First Search":
 
@@ -103,11 +134,39 @@ class SmartRoutePlannerGUI(ctk.CTk):
                 self.grid_object
             )
 
-            self.visualizer.animate(
-                visited,
-                path
+        else:
+
+            messagebox.showinfo(
+                "Coming Soon",
+                f"{algorithm} will be implemented soon."
+            )
+
+            return
+
+        execution_time = time.perf_counter() - start_time
+
+        # ---------------- Statistics ----------------
+
+        if path:
+
+            self.stats.finish_search(
+                visited_nodes=len(visited),
+                path_length=len(path),
+                execution_time=execution_time
             )
 
         else:
 
-            print(f"{algorithm} will be implemented soon.")
+            self.stats.no_path(
+                visited_nodes=len(visited),
+                execution_time=execution_time
+            )
+
+        self.sidebar.update_statistics(self.stats)
+
+        # ---------------- Animate ----------------
+
+        self.visualizer.animate(
+            visited,
+            path
+        )
